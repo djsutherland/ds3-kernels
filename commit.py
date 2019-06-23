@@ -1,7 +1,12 @@
 #!/usr/bin/env python
+import json
 import os
 
 import pygit2
+from pygit2 import (
+    GIT_FILEMODE_BLOB as filemode,
+    GIT_FILEMODE_BLOB_EXECUTABLE as filemode_exe,
+)
 
 
 repo = pygit2.Repository(".")
@@ -19,13 +24,26 @@ treebuilder = repo.TreeBuilder(repo[repo.head.target].tree)
 treebuilder.remove("build.py")
 treebuilder.remove("commit.py")
 treebuilder.remove("Makefile")
-treebuilder.remove("solutions.ipynb")
+treebuilder.remove("README-setup.md")
+treebuilder.insert(
+    "README.md", repo.create_blob_fromworkdir("README-setup.md"), filemode
+)
 
 for fn in ["practical.ipynb"]:
     blob = repo.create_blob_fromworkdir(fn)
-    exe = os.access(fn, os.X_OK)
-    mode = pygit2.GIT_FILEMODE_BLOB_EXECUTABLE if exe else pygit2.GIT_FILEMODE_BLOB
+    mode = filemode_exe if os.access(fn, os.X_OK) else filemode
     treebuilder.insert(fn, blob, mode)
+
+# munge solutions.ipynb to include the readme
+with open("solutions.ipynb") as f:
+    nb = json.load(f)
+cell = next(c for c in nb["cells"] if c["cell_type"] == "code")
+assert "display(Markdown(" in cell["source"][-1]
+cell["cell_type"] = "markdown"
+cell["source"] = cell["outputs"][0]["data"]["text/markdown"]
+del cell["outputs"], cell["execution_count"]
+solutions_blob = repo.create_blob(json.dumps(nb, indent=1).encode("utf-8"))
+treebuilder.insert("solutions.ipynb", solutions_blob, filemode)
 
 # munge the gitignore
 with open(".gitignore") as f:
@@ -34,7 +52,7 @@ with open(".gitignore") as f:
     rest = f.read()
     assert len(rest) > 0
     gitignore_id = repo.create_blob(rest.encode("utf-8"))
-treebuilder.insert(".gitignore", gitignore_id, pygit2.GIT_FILEMODE_BLOB)
+treebuilder.insert(".gitignore", gitignore_id, filemode)
 
 tree_id = treebuilder.write()
 
