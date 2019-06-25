@@ -8,7 +8,7 @@ with open("solutions.ipynb") as f:
     nb = json.load(f)
 
 skip_cell = re.compile(r"\s*(<!--|#)\s*SOLUTION CELL")
-skip_line = re.compile(r".*(<!--|#)\s* SOLUTION(-->)?\s*$")
+skip_line = re.compile(r".*(<!--|#)\s*SOLUTION\s*(-->)?\s*$")
 
 with open("README-setup.md") as f:
     readme_lines = f.readlines()
