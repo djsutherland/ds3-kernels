@@ -23,23 +23,23 @@ if repo.head.shorthand != "source":
 index = pygit2.Index()
 index.read_tree(repo[repo.head.target].tree)
 
+
+def index_add(name, blob, mode=filemode):
+    index.add(pygit2.IndexEntry(name, blob, mode))
+
+
 index.remove("build.py")
 index.remove("commit.py")
 index.remove("Makefile")
 index.remove("README-setup.md")
-index.add(
-    pygit2.IndexEntry(
-        "README.md", repo.create_blob_fromworkdir("README-setup.md"), filemode
-    )
-)
+index_add("README.md", repo.create_blob_fromworkdir("README-setup.md"))
 
 for fn in ["practical.ipynb", "data/ridge-toy.npz"] + glob("figs/*.png"):
-    blob = repo.create_blob_fromworkdir(fn)
     mode = filemode_exe if os.access(fn, os.X_OK) else filemode
-    index.add(pygit2.IndexEntry(fn, blob, mode))
+    index_add(fn, repo.create_blob_fromworkdir(fn), mode)
 
-# munge solutions.ipynb to include the readme
-with open("solutions.ipynb") as f:
+# munge solutions-ridge.ipynb to include the readme
+with open("solutions-run-ridge.ipynb") as f:
     nb = json.load(f)
 cell = next(c for c in nb["cells"] if c["cell_type"] == "code")
 assert "display(Markdown(" in cell["source"][-1]
@@ -47,7 +47,12 @@ cell["cell_type"] = "markdown"
 cell["source"] = cell["outputs"][0]["data"]["text/markdown"]
 del cell["outputs"], cell["execution_count"]
 solutions_blob = repo.create_blob(json.dumps(nb, indent=1).encode("utf-8"))
-index.add(pygit2.IndexEntry("solutions.ipynb", solutions_blob, filemode))
+index_add("solutions-ridge.ipynb", solutions_blob)
+
+index_add(
+    "solutions-testing.ipynb",
+    repo.create_blob_fromworkdir("solutions-run-testing.ipynb"),
+)
 
 # munge the gitignore
 with open(".gitignore") as f:
@@ -56,7 +61,7 @@ with open(".gitignore") as f:
     rest = f.read()
     assert len(rest) > 0
     gitignore_id = repo.create_blob(rest.encode("utf-8"))
-index.add(pygit2.IndexEntry(".gitignore", gitignore_id, filemode))
+index_add(".gitignore", gitignore_id, filemode)
 
 tree_id = index.write_tree(repo)
 
