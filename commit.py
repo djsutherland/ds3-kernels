@@ -19,20 +19,23 @@ for k, v in repo.status().items():
 if repo.head.shorthand != "source":
     raise ValueError("expected to be on the `source` branch")
 
-treebuilder = repo.TreeBuilder(repo[repo.head.target].tree)
+index = pygit2.Index()
+index.read_tree(repo[repo.head.target].tree)
 
-treebuilder.remove("build.py")
-treebuilder.remove("commit.py")
-treebuilder.remove("Makefile")
-treebuilder.remove("README-setup.md")
-treebuilder.insert(
-    "README.md", repo.create_blob_fromworkdir("README-setup.md"), filemode
+index.remove("build.py")
+index.remove("commit.py")
+index.remove("Makefile")
+index.remove("README-setup.md")
+index.add(
+    pygit2.IndexEntry(
+        "README.md", repo.create_blob_fromworkdir("README-setup.md"), filemode
+    )
 )
 
 for fn in ["practical.ipynb", "data/ridge-toy.npz", "figs/toy-krr-eval.png"]:
     blob = repo.create_blob_fromworkdir(fn)
     mode = filemode_exe if os.access(fn, os.X_OK) else filemode
-    treebuilder.insert(fn, blob, mode)
+    index.add(pygit2.IndexEntry(fn, blob, mode))
 
 # munge solutions.ipynb to include the readme
 with open("solutions.ipynb") as f:
@@ -43,7 +46,7 @@ cell["cell_type"] = "markdown"
 cell["source"] = cell["outputs"][0]["data"]["text/markdown"]
 del cell["outputs"], cell["execution_count"]
 solutions_blob = repo.create_blob(json.dumps(nb, indent=1).encode("utf-8"))
-treebuilder.insert("solutions.ipynb", solutions_blob, filemode)
+index.add(pygit2.IndexEntry("solutions.ipynb", solutions_blob, filemode))
 
 # munge the gitignore
 with open(".gitignore") as f:
@@ -52,14 +55,14 @@ with open(".gitignore") as f:
     rest = f.read()
     assert len(rest) > 0
     gitignore_id = repo.create_blob(rest.encode("utf-8"))
-treebuilder.insert(".gitignore", gitignore_id, filemode)
+index.add(pygit2.IndexEntry(".gitignore", gitignore_id, filemode))
 
-tree_id = treebuilder.write()
+tree_id = index.write_tree(repo)
 
-parent_ids = [repo.head.target]
+parent_ids = []
 built = repo.lookup_branch("built")
 if built is not None:
-    parent_ids.insert(0, built.target)  # apparently wants things backwards...
+    parent_ids.append(built.target)
 
 old_msg = repo[repo.head.target].message
 line = old_msg.strip().split("\n")[0]
