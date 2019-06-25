@@ -1,5 +1,6 @@
 /practical-*.ipynb
-/solutions-run-*.ipynb
+/solutions-*.ipynb
+!/solutions-src-*.ipynb
 # END OF SOURCE IGNORES
 # Byte-compiled / optimized / DLL files
 __pycache__/

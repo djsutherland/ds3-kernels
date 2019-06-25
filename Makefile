@@ -13,6 +13,6 @@ solutions-%.ipynb: solutions-src-%.ipynb
 	jupyter nbconvert --to=notebook --execute $< --output=$@ \
 		--ExecutePreprocessor.kernel_name=python3 \
 
-commit: practical-ridge.ipynb practical-testing.ipynb solutions-run-ridge.ipynb solutions-run-testing.ipynb
+commit: practical-ridge.ipynb practical-testing.ipynb solutions-ridge.ipynb solutions-testing.ipynb
 	./commit.py
 
