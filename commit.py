@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from glob import glob
 import json
 import os
 
@@ -32,7 +33,7 @@ index.add(
     )
 )
 
-for fn in ["practical.ipynb", "data/ridge-toy.npz", "figs/toy-krr-eval.png"]:
+for fn in ["practical.ipynb", "data/ridge-toy.npz"] + glob("figs/*.png"):
     blob = repo.create_blob_fromworkdir(fn)
     mode = filemode_exe if os.access(fn, os.X_OK) else filemode
     index.add(pygit2.IndexEntry(fn, blob, mode))
