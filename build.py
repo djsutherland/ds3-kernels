@@ -4,8 +4,8 @@ import json
 import re
 
 
-def process(file_suffix, include_readme=False):
-    with open(f"solutions-{file_suffix}.ipynb") as f:
+def process(file, include_readme=False):
+    with open(f"solutions-{file}.ipynb") as f:
         nb = json.load(f)
 
     skip_cell = re.compile(r"\s*(<!--|#)\s*SOLUTION CELL")
@@ -34,7 +34,7 @@ def process(file_suffix, include_readme=False):
     new_nb = nb.copy()
     new_nb["cells"] = new_cells
 
-    with open(f"practical-{file_suffix}.ipynb", "w") as f:
+    with open(f"{file}.ipynb", "w") as f:
         json.dump(new_nb, f, indent=1)
 
 
@@ -42,7 +42,7 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("file_suffix")
+    parser.add_argument("file")
     parser.add_argument("--include-readme", action="store_true")
     args = parser.parse_args()
     process(**vars(args))

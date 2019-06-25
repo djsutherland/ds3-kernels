@@ -1,6 +1,7 @@
-/practical-*.ipynb
-/solutions-*.ipynb
-!/solutions-src-*.ipynb
+/ridge.ipynb
+/testing.ipynb
+/solutions-ridge.ipynb
+/solutions-testing.ipynb
 # END OF SOURCE IGNORES
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -1,11 +1,11 @@
 .PHONY: all commit
 
-all: practical-ridge.ipynb practical-testing.ipynb solutions-ridge.ipynb solutions-testing.ipynb
+all: ridge.ipynb testing.ipynb solutions-ridge.ipynb solutions-testing.ipynb
 
-practical-ridge.ipynb: solutions-ridge.ipynb build.py
+ridge.ipynb: solutions-ridge.ipynb build.py
 	./build.py ridge --include-readme
 
-practical-testing.ipynb: solutions-testing.ipynb build.py
+testing.ipynb: solutions-testing.ipynb build.py
 	./build.py testing
 
 solutions-%.ipynb: solutions-src-%.ipynb
@@ -13,6 +13,6 @@ solutions-%.ipynb: solutions-src-%.ipynb
 	jupyter nbconvert --to=notebook --execute $< --output=$@ \
 		--ExecutePreprocessor.kernel_name=python3 \
 
-commit: practical-ridge.ipynb practical-testing.ipynb solutions-ridge.ipynb solutions-testing.ipynb
+commit: ridge.ipynb testing.ipynb solutions-ridge.ipynb solutions-testing.ipynb
 	./commit.py
 

@@ -1,14 +1,14 @@
-This notebook is the practical component of the [Data Science Summer School](https://www.ds3-datascience-polytechnique.fr) 2019 session on "Learning With Positive Definite Kernels: Theory, Algorithms, and Applications."
+This is the practical component of the [Data Science Summer School](https://www.ds3-datascience-polytechnique.fr) 2019 session on "Learning With Positive Definite Kernels: Theory, Algorithms, and Applications."
 
 It was prepared primarily by [Dougal Sutherland](http://www.gatsby.ucl.ac.uk/~dougals/), based on discussions with [Bharath Sriperumbudur](http://personal.psu.edu/bks18/), and partially based on earlier [materials](https://github.com/karlnapf/ds3_kernel_testing) by [Heiko Strathmann](http://herrstrathmann.de/).
 
 We'll cover, in varying levels of detail, the following topics:
 
-- Solving regression problems with kernel ridge regression:
+- Solving regression problems with kernel ridge regression ([`ridge.ipynb`](ridge.ipynb)):
   - The "standard" approach.
   - Computational/statistical tradeoffs using the Nyström and random Fourier kernel approximations.
   - Learning an appropriate kernel function in a meta-learning setting.
-- Two-sample testing with the kernel Maximum Mean Discrepancy (MMD):
+- Two-sample testing with the kernel Maximum Mean Discrepancy (MMD) ([`testing.ipynb`](testing.ipynb)):
   - Estimators for the MMD.
   - Learning an appropriate kernel function.
 
