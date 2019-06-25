@@ -38,7 +38,7 @@ If you don't already have a setup you're happy with, we recommend the `conda` pa
 ```bash
 conda create --name ds3-kernels \
   --override-channels -c pytorch -c defaults --strict-channel-priority \
-  python=3 notebook \
+  python=3 notebook ipywidgets \
   numpy scipy scikit-learn \
   pytorch=1.1 torchvision \
   matplotlib seaborn tqdm
