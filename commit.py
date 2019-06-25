@@ -29,7 +29,7 @@ treebuilder.insert(
     "README.md", repo.create_blob_fromworkdir("README-setup.md"), filemode
 )
 
-for fn in ["practical.ipynb"]:
+for fn in ["practical.ipynb", "data/ridge-toy.npz", "figs/toy-krr-eval.png"]:
     blob = repo.create_blob_fromworkdir(fn)
     mode = filemode_exe if os.access(fn, os.X_OK) else filemode
     treebuilder.insert(fn, blob, mode)

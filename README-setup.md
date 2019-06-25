@@ -14,6 +14,9 @@ We'll cover, in varying levels of detail, the following topics:
 
 ## Dependencies
 
+### Colab
+
+This notebook is available on Google Colab (**XXX: link**). You don't have to set anything up yourself and it runs on cloud resources, so this is probably the easiest option.
 
 
 ### Files
@@ -27,14 +30,17 @@ git clone https://github.com/dougalsutherland/ds3-kernels
 This notebook requires Python 3.6+. Python 3.0 was released in 2008, and it's time to stop living in the past; most importart Python projects [are dropping support for Python 2 this year](https://python3statement.org/). If you've never used Python 3 before, don't worry! It's almost the same; for the purposes of this notebook, you probably only need to know that you should write `print("hi")` since it's a function call now, and you can write `A @ B` instead of `np.dot(A, B)`.
 
 #### Python packages
-We recommend the `conda` package manager; if you don't have it already, install [miniconda](https://docs.conda.io/en/latest/miniconda.html). You can create an environment with everything you need as:
+
+The main thing we use is PyTorch and Jupyter. If you already have those set up, you should be fine; just additionally make sure you also have (with `conda install` or `pip install`) `seaborn`, `tqdm`, and `sckit-learn`. We import everything right at the start, so if that runs you shouldn't hit any surprises later on.
+
+If you don't already have a setup you're happy with, we recommend the `conda` package manager - start by installing [miniconda](https://docs.conda.io/en/latest/miniconda.html). Then you can create an environment with everything you need as:
 
 ```bash
 conda create --name ds3-kernels \
-  --override-channels -c conda-forge -c defaults --strict-channel-priority \
-  python=3 \
-  notebook nb_conda_kernels \
-  numpy scipy scikit-learn autograd \
+  --override-channels -c pytorch -c defaults --strict-channel-priority \
+  python=3 notebook \
+  numpy scipy scikit-learn \
+  pytorch=1.1 torchvision \
   matplotlib seaborn tqdm
 
 conda activate ds3-kernels
@@ -44,17 +50,13 @@ cd ds3-kernels
 jupyter notebook
 ```
 
-If you have an old conda setup, you can use `source activate` instead of `conda activate`, but it's better to [switch to the new style of activation](https://conda.io/projects/conda/en/latest/release-notes.html#recommended-change-to-enable-conda-in-your-shell). This won't matter for this tutorial, but it's general good practice.
+(If you have an old conda setup, you can use `source activate` instead of `conda activate`, but it's better to [switch to the new style of activation](https://conda.io/projects/conda/en/latest/release-notes.html#recommended-change-to-enable-conda-in-your-shell). This won't matter for this tutorial, but it's general good practice.)
 
-`nb_conda_kernels` makes it easy to switch conda environments inside Jupyter. It's not _necessary_, but it makes life a little easier.
+(You can make your life easier when using jupyter notebooks with multiple kernels by installing `nb_conda_kernels`, but as long as you install and run `jupyter` from inside the env it will also be fine.)
 
-If you don't want to use conda and already have a standard Python 3.6+ and Jupyter setup, we're actually not using anything that out of the ordinary; you can probably get everything not totally ordinary
-```
-pip install scikit-learn autograd seaborn tqdm
-```
-All of the imports are right below, so if that runs you shouldn't hit anything later on that'll surprise you.
 
-For the bits that do some "deep learning", you have a few options:
+## PyTorch
 
-- The default on is [Autograd](https://github.com/HIPS/autograd). Use this if you're not already super-comfortable with one of the other options; it's very easy to use if you already know Numpy. We'll have a brief intro when you need it.
-- You can also use PyTorch or TensorFlow (in [eager mode](https://www.tensorflow.org/guide/eager)) if you want. Make the choice by assigning the right value to `engine` in the notebook.
+We're going to use PyTorch in this tutorial, even though we're not doing a ton of "deep learning." (The CPU version will be fine, though a GPU might let you get slightly better performance in some of the "advanced" sections.)
+
+If you haven't used PyTorch before, don't worry! The API is unfortunately a little different from NumPy (and TensorFlow), but it's pretty easy to get used to; you can refer to [a cheat sheet vs NumPy](https://github.com/wkentaro/pytorch-for-numpy-users/blob/master/README.md) as well as the docs: [tensor methods](https://pytorch.org/docs/stable/tensors.html) and [the `torch` namespace](https://pytorch.org/docs/stable/torch.html#torch.eq). Feel free to ask if you have trouble figuring something out.
