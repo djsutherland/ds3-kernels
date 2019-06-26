@@ -4,6 +4,7 @@ matrices, allowing for various sums / means / etc used by MMD-related estimators
 """
 from functools import wraps
 
+import numpy as np
 import torch
 
 from .utils import as_tensors
@@ -14,11 +15,10 @@ def _cache(f):
     @wraps(f)
     def wrapper(self, *args):
         key = (f.__name__,) + tuple(args)
-        try:
+        if key in self._cache:
             return self._cache[key]
-        except KeyError:
-            self._cache[key] = val = f(self, *args)
-            return val
+        self._cache[key] = val = f(self, *args)
+        return val
 
     return wrapper
 
@@ -48,11 +48,11 @@ class LazyKernel(torch.nn.Module):
 
     def __init__(self, X, *rest):
         super().__init__()
-        self._parts = as_tensors(X, *rest)
+        self._parts = X, *rest = as_tensors(X, *rest)
         for p in self._parts:
             if p is not None:
-                assert len(p.shape) == 2
-                assert p.shape[1] == self.data_dim
+                assert len(p.shape) >= 2
+                assert p.shape[1:] == X.shape[1:]
 
         self._cache = {}
         if not hasattr(self, "const_diagonal"):
@@ -63,16 +63,16 @@ class LazyKernel(torch.nn.Module):
         return self._parts[0]
 
     @property
-    def data_dim(self):
-        return self._parts[0].shape[1]
-
-    @property
     def ns(self):
         return [self.X.shape[0] if p is None else p.shape[0] for p in self._parts]
 
     @property
     def n_parts(self):
         return len(self._parts)
+
+    @property
+    def parts(self):
+        return [self.X if p is None else p for p in self._parts]
 
     def __repr__(self):
         return f"<{type(self).__name__}({', '.join(str(n) for n in self.ns)})>"
@@ -89,7 +89,10 @@ class LazyKernel(torch.nn.Module):
 
     @_cache
     def __getitem__(self, k):
-        i, j = k
+        try:
+            i, j = k
+        except ValueError:
+            raise KeyError("You should index kernels with pairs")
 
         A = self._parts[i]
         if A is None:
@@ -122,42 +125,67 @@ class LazyKernel(torch.nn.Module):
         else:
             return as_matrix(k)
 
-    def __getattr__(self, name):
-        # self.XX, self.XY, self.YZ, etc
-        ret_matrix = False
-        if name.endswith("_m"):
-            ret_matrix = True
-            name = name[:-2]
+    @_cache
+    def joint(self, *inds):
+        if not inds:
+            return self.joint(*range(self.n_parts))
+        return torch.cat([torch.cat([self[i, j] for j in inds], 1) for i in inds], 0)
 
-        try:
-            a, b = name
-            i = _name_map[a]
-            j = _name_map[b]
+    @_cache
+    def joint_m(self, *inds):
+        if not inds:
+            return self.joint(*range(self.n_parts))
+        return as_matrix(
+            self.joint(*inds), const_diagonal=self.const_diagonal, symmetric=True
+        )
+
+    def __getattr__(self, name):
+        # self.X, self.Y, self.Z
+        if len(name) == 1:
+            i = _name_map.get(name, np.inf)
+            if i < self.n_parts:
+                return self.parts[i]
+            raise AttributeError()
+
+        # self.XX, self.XY, self.YZ, etc; also self.XX_m
+        ret_matrix = False
+        if len(name) == 4 and name.endswith("_m"):
+            ret_matrix = True
+            name = name[:2]
+
+        if len(name) == 2:
+            i = _name_map.get(name[0], np.inf)
+            j = _name_map.get(name[1], np.inf)
             if i < self.n_parts and j < self.n_parts:
                 return self.matrix(i, j) if ret_matrix else self[i, j]
             else:
-                raise KeyError
-        except (KeyError, ValueError):
-            raise AttributeError
+                raise AttributeError(f"have {self.n_parts} parts, asked for {i}, {j}")
+
+        return super().__getattr__(name)
 
     def _invalidate_cache(self, i):
         for k in list(self._cache.keys()):
-            if i in k[1:]:
+            if (
+                i in k[1:]
+                or any(isinstance(arg, tuple) and i in arg for arg in k[1:])
+                or k in [("joint",), ("joint_m",)]
+            ):
                 del self._cache[k]
 
     def drop_last_part(self):
         self._invalidate_cache(self.n_parts - 1)
+        del self._parts[-1]
 
     def change_part(self, i, new):
         assert i < self.n_parts
         assert len(new.shape) == 2
-        assert new.shape[1] == self._parts.shape[0]
+        assert new.shape[1:] == self.X.shape[1:]
         self._invalidate_cache(i)
         self._parts[i] = new
 
     def append_part(self, new):
         assert len(new.shape) == 2
-        assert new.shape[1] == self._parts.shape[0]
+        assert new.shape[1:] == self.X.shape[1:]
         self._parts.append(new)
 
     def as_tensors(self, *args, **kwargs):

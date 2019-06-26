@@ -1,4 +1,4 @@
-import matplotlib as mpl
+from matplotlib import cm
 import numpy as np
 import torch
 
@@ -18,7 +18,7 @@ def plot_confusion_matrix(
     classes,
     normalize=False,
     title=None,
-    cmap=mpl.cm.Blues,
+    cmap=cm.Blues,
     rotation=45,
     **fig_kwargs
 ):
