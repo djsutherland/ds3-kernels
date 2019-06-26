@@ -13,7 +13,14 @@ def as_tensors(X, *rest):
 
 
 def plot_confusion_matrix(
-    y_true, y_pred, classes, normalize=False, title=None, cmap=mpl.cm.Blues, rotation=45
+    y_true,
+    y_pred,
+    classes,
+    normalize=False,
+    title=None,
+    cmap=mpl.cm.Blues,
+    rotation=45,
+    **fig_kwargs
 ):
     """
     This function prints and plots the confusion matrix.
@@ -37,7 +44,7 @@ def plot_confusion_matrix(
     if normalize:
         cm = cm.astype("float") / cm.sum(axis=1)[:, np.newaxis]
 
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(**fig_kwargs)
     ax.grid(False)
     im = ax.imshow(cm, interpolation="nearest", cmap=cmap)
     ax.figure.colorbar(im, ax=ax)
