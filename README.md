@@ -21,7 +21,7 @@ These notebooks are available on Google Colab: [ridge](https://colab.research.go
 
 ### Local setup
 
-Run `check_imports_and_setup.py` to see if everything you need is installed (and download some more small datasets if necessary). If that works, you're set; otherwise, read on.
+Run `check_imports_and_download.py` to see if everything you need is installed (and download some more small datasets if necessary). If that works, you're set; otherwise, read on.
 
 
 ### Files
@@ -52,6 +52,7 @@ conda activate ds3-kernels
 
 git clone https://github.com/dougalsutherland/ds3-kernels
 cd ds3-kernels
+python check_imports_and_download.py
 jupyter notebook
 ```
 
