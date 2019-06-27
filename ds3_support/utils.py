@@ -1,6 +1,7 @@
 from matplotlib import cm
 import numpy as np
 import torch
+import torchvision
 
 
 def as_tensors(X, *rest):
@@ -81,3 +82,7 @@ def plot_confusion_matrix(
             )
     fig.tight_layout()
     return ax
+
+
+def pil_grid(X, **kwargs):
+    return torchvision.transforms.ToPILImage()(torchvision.utils.make_grid(X, **kwargs))
