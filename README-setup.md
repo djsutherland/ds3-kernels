@@ -19,6 +19,10 @@ We'll cover, in varying levels of detail, the following topics:
 
 These notebooks are available on Google Colab: [ridge](https://colab.research.google.com/github/dougalsutherland/ds3-kernels/blob/built/ridge.ipynb) or [testing](https://colab.research.google.com/github/dougalsutherland/ds3-kernels/blob/built/testing.ipynb). You don't have to set anything up yourself and it runs on cloud resources, so this is probably the easiest option. If you want to use the GPU, click Runtime -> Change runtime type -> Hardware accelerator -> GPU.
 
+### Local setup
+
+Run `check_imports_and_setup.py` to see if everything you need is installed (and download some more small datasets if necessary). If that works, you're set; otherwise, read on.
+
 
 ### Files
 There are a few Python files and some data files in the repository. By far the easiest thing to do is just put them all in the same directory:
