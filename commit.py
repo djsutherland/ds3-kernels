@@ -38,8 +38,11 @@ index.remove("solutions-src-ridge.ipynb")
 index.remove("solutions-src-testing.ipynb")
 index_add("README.md", repo.create_blob_fromworkdir("README-setup.md"))
 
-for fn in ["ridge.ipynb", "testing.ipynb", "solutions-testing.ipynb",
-           "data/ridge-toy.npz"] + glob("figs/*.png"):
+for fn in (
+    ["ridge.ipynb", "testing.ipynb", "solutions-testing.ipynb"]
+    + glob("figs/*.png")
+    + glob("data/*.npz")
+):
     mode = filemode_exe if os.access(fn, os.X_OK) else filemode
     index_add(fn, repo.create_blob_fromworkdir(fn), mode)
 
