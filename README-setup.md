@@ -16,7 +16,7 @@ We'll cover, in varying levels of detail, the following topics:
 
 ### Colab
 
-This notebook is available on Google Colab (**XXX: link**). You don't have to set anything up yourself and it runs on cloud resources, so this is probably the easiest option.
+These notebooks are available on Google Colab: [ridge](https://colab.research.google.com/github/dougalsutherland/ds3-kernels/blob/built/ridge.ipynb) or [testing](https://colab.research.google.com/github/dougalsutherland/ds3-kernels/blob/built/testing.ipynb). You don't have to set anything up yourself and it runs on cloud resources, so this is probably the easiest option. If you want to use the GPU, click Runtime -> Change runtime type -> Hardware accelerator -> GPU.
 
 
 ### Files
