@@ -1,4 +1,5 @@
 This is the practical component of the [Data Science Summer School](https://www.ds3-datascience-polytechnique.fr) 2019 session on "Learning With Positive Definite Kernels: Theory, Algorithms, and Applications."
+Slides are available [here](https://github.com/dougalsutherland/ds3-kernels/tree/slides).
 
 It was prepared primarily by [Dougal Sutherland](http://www.gatsby.ucl.ac.uk/~dougals/), based on discussions with [Bharath Sriperumbudur](http://personal.psu.edu/bks18/), and partially based on earlier [materials](https://github.com/karlnapf/ds3_kernel_testing) by [Heiko Strathmann](http://herrstrathmann.de/).
 
